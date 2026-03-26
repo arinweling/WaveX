@@ -1,0 +1,32 @@
+# ResNet-18 on ImageNette (10-class ImageNet subset, full 224×224 resolution)
+# ImageNette classes: tench, English springer, cassette player, chain saw,
+#   church, French horn, garbage truck, gas pump, golf ball, parachute
+#
+# Download: wget https://s3.amazonaws.com/fast-ai-imageclas/imagenette2.tgz
+#           tar -xzf imagenette2.tgz -C ./data/
+#
+# Uses ImageNet-1k pretrained ResNet-18 frozen as the explainee.
+# L_CE and L_rob use the model's own top-1 prediction (Option B) so there
+# is no label-space mismatch between ImageFolder indices and ImageNet-1k.
+backbone: resnet18
+pretrained: true
+dataset: imagefolder     # uses ImageFolder loader (train/ and val/ subdirs)
+image_size: 224          # standard ImageNet resolution
+batch_size: 16
+lr: 1.0e-4
+epochs: 50
+
+lambda_act: 1.0
+lambda_CE:  8.0
+lambda_KL:  0.5
+lambda_rob: 5.0
+lambda_bin: 10.0
+
+# Per-subband area weights
+lambda_area_LL: 50.0
+lambda_area_LH: 0.0
+lambda_area_HL: 0.0
+lambda_area_HH: 10.0
+
+wavelet: haar
+levels: 1

@@ -1,0 +1,28 @@
+# Run 04 — Aggressive sparsity (high area weights, lower fidelity)
+# Pushes masks to be very sparse — useful to find the minimal sufficient set
+# of wavelet coefficients for classification.
+# Use when run01 shows sparsity < 0.4 (masks are too dense).
+# Expected: sparser masks but potentially lower label_preservation_rate.
+backbone: custom_cnn
+pretrained: false
+dataset: mnist
+image_size: 28
+batch_size: 32
+lr: 1.0e-3
+epochs: 50
+classifier_checkpoint: mnist_classifier.pth
+
+lambda_act: 0.6
+lambda_CE:  4.0
+lambda_KL:  0.54
+lambda_rob: 10.0
+lambda_bin: 0.5    # lower binarisation weight — let area loss do the work
+
+# 2.5× stronger area penalties than baseline
+lambda_area_LL:  50.0
+lambda_area_LH: 100.0
+lambda_area_HL: 100.0
+lambda_area_HH: 250.0
+
+wavelet: haar
+levels: 1

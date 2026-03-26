@@ -1,0 +1,54 @@
+# ResNet-18 pretrained on ImageNet-1k — single-image explanation mode.
+#
+# Instead of iterating over the full ImageNet dataset, one image is loaded
+# directly from disk via `single_image_path`. The UNet overfits to produce
+# the best wavelet-domain explanation for that one image.
+#
+# Usage:
+#   python train.py \
+#     --config configs/resnet18_imagenet_single.yaml \
+#     --data_path /unused \
+#     --output_dir outputs/imagenet_single
+#
+# Set `single_image_path` to an absolute or relative path to any JPEG/PNG.
+# By default the trainer uses the model's own top-1 prediction for all losses.
+# Set `fixed_class_label` to an integer class id to force explanation toward
+# that class instead.
+
+backbone: resnet18
+pretrained: true
+dataset: imagenet
+image_size: 224
+
+single_image_path: /home/arin/Documents/btp2/wavelet_explanation/data/husky.jpg  # ← set this to your image, e.g. /path/to/dog.jpg
+single_image_mode: true  # activated automatically when single_image_path is set
+fixed_class_label: 248  # integer class id to explain, e.g. 93 for ImageNet "bee eater"
+
+pixel_mask_mode: false   # true → PixelMaskNet (no wavelets); false → wavelet UNet
+
+batch_size: 1
+lr: 1.0e-4
+epochs: 500
+viz_every: 20             # save explanation & attribution images every N epochs
+
+lambda_act: 100.0
+lambda_CE:  1000.0       # high — we want the explanation to preserve the top-1 class
+lambda_KL:  0.0
+lambda_rob: 0.0
+lambda_bin: 0.0
+lambda_tv:  00.0        # smoothness on wavelet masks
+lambda_tv_e: 500.0       # smoothness on explanation pixel values
+lambda_area_e: 75.0       # pixel-space area penalty (tune up to increase sparsity)
+lambda_area_pixel: 0.0  # used only in pixel_mask_mode
+min_explanation_neighbors: 2  # remove pixels with fewer than this many active neighbours (0 = off)
+explanation_active_threshold: 0.1  # pixels below 5% of per-image peak are treated as inactive grey
+
+# Per-subband area weights (sparsity)
+disabled_subbands: [LH, HL]
+lambda_area_LL: 10.0
+lambda_area_LH: 0.0
+lambda_area_HL: 0.0
+lambda_area_HH: 50.0
+
+wavelet: haar
+levels: 1

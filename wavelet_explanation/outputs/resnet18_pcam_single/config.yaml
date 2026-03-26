@@ -1,0 +1,44 @@
+# Single-image explanation config using TIAToolbox PCAM-pretrained ResNet-18.
+# Use this like the ImageNet single config, but with 96x96 histology patches.
+
+backbone: resnet18_tiatoolbox_pcam
+dataset: imagefolder
+image_size: 96
+
+# Optional override if you want a different HF checkpoint id
+classifier_hf_repo: 1aurent/resnet18.tiatoolbox-pcam
+
+single_image_path: /home/arin/Documents/btp2/wavelet_explanation/data/pcam.jpg
+single_image_mode: true
+
+# PCAM is typically binary; set 0/1 if you want to force explanation to a class.
+fixed_class_label: 0
+
+pixel_mask_mode: false
+
+batch_size: 1
+lr: 1.0e-4
+epochs: 500
+viz_every: 20             # save explanation & attribution images every N epochs
+
+lambda_act: 100.0
+lambda_CE:  1000.0       # high — we want the explanation to preserve the top-1 class
+lambda_KL:  0.0
+lambda_rob: 0.0
+lambda_bin: 0.0
+lambda_tv:  00.0        # smoothness on wavelet masks
+lambda_tv_e: 500.0       # smoothness on explanation pixel values
+lambda_area_e: 75.0       # pixel-space area penalty (tune up to increase sparsity)
+lambda_area_pixel: 0.0  # used only in pixel_mask_mode
+min_explanation_neighbors: 2  # remove pixels with fewer than this many active neighbours (0 = off)
+explanation_active_threshold: 0.1  # pixels below 5% of per-image peak are treated as inactive grey
+
+# Per-subband area weights (sparsity)
+disabled_subbands: [LH, HL]
+lambda_area_LL: 10.0
+lambda_area_LH: 0.0
+lambda_area_HL: 0.0
+lambda_area_HH: 50.0
+
+wavelet: haar
+levels: 1

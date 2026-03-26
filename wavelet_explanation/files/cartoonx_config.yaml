@@ -1,0 +1,113 @@
+# ══════════════════════════════════════════════════════════════════
+#  CartoonX Configuration File
+#  Edit this file directly — no Python code changes needed.
+#  Load with: cfg = CartoonXConfig.from_yaml("cartoonx_config.yaml")
+# ══════════════════════════════════════════════════════════════════
+
+
+# ── Active preset ───────────────────────────────────────────────────
+# If set, this preset is loaded FIRST, then any fields below override it.
+# Options: "original" | "kl" | "full" | "fast" | null
+# Set to null to build config purely from the fields below.
+preset: null
+
+
+# ── Loss toggles ────────────────────────────────────────────────────
+use_kl:        true    # KL divergence (recommended — matches full softmax distribution)
+use_act_match: false   # Activation matching (layer-wise intermediate supervision)
+use_ce:        false   # Cross-entropy (forces explanation to independently classify)
+
+
+# ── Loss weights ────────────────────────────────────────────────────
+# lambda_sparse : L1 sparsity on mask — core CartoonX term
+#   Higher → sparser explanation (more regions blurred out)
+#   Lower  → denser explanation (more detail preserved)
+#   Typical range: 10 – 200
+lambda_sparse: 50.0
+
+# lambda_kl : Weight for KL divergence loss
+#   Only used when use_kl: true
+#   Typical range: 0.5 – 5.0
+lambda_kl: 1.0
+
+# lambda_act : Weight for activation matching loss
+#   Only used when use_act_match: true
+#   Keep small — activation values are large in magnitude
+#   Typical range: 0.01 – 0.5
+lambda_act: 0.1
+
+# lambda_ce : Weight for cross-entropy loss
+#   Only used when use_ce: true
+#   Typical range: 0.1 – 2.0
+lambda_ce: 0.5
+
+
+# ── DWT parameters ──────────────────────────────────────────────────
+# wavelet : Mother wavelet for the DWT
+#   "db3"  → Daubechies-3 (paper default, smooth results)
+#   "db4"  → Daubechies-4 (slightly smoother)
+#   "db5"  → Daubechies-5
+#   "haar" → Haar (blocky square artifacts — avoid)
+wavelet: "db3"
+
+# n_scales : Number of DWT decomposition levels J
+#   Higher J → coarser/smoother explanations (fewer fine details)
+#   Lower J  → finer explanations (more edges preserved)
+#   Paper uses J=5 for 256×256 images
+#   Must satisfy: n_scales <= floor(log2(image_size))
+n_scales: 5
+
+
+# ── Optimization ────────────────────────────────────────────────────
+# n_steps : Number of Adam gradient descent steps
+#   Paper: 2000. For quick tests use 300.
+n_steps: 2000
+
+# n_samples : Number of noise samples L per step (Monte Carlo estimate)
+#   More samples → stabler gradients, more compute
+#   Paper: 64. For quick tests use 16.
+n_samples: 64
+
+# lr : Adam learning rate
+lr: 0.001
+
+# image_size : Image will be resized to (image_size × image_size)
+image_size: 256
+
+
+# ── Activation matching layers ──────────────────────────────────────
+# Only used when use_act_match: true
+#
+# act_layers : Named layers to hook for activation matching.
+#   Run this to list all valid layer names for your model:
+#     for name, _ in model.named_modules(): print(name)
+#
+#   VGG16 examples:
+#     model.features.4   → relu after 1st block  (low-level: edges, colors)
+#     model.features.9   → relu after 2nd block  (textures)
+#     model.features.18  → relu after 3rd block  (mid-level patterns)
+#     model.features.27  → relu after 4th block  (object parts)
+#     model.features.36  → relu after 5th block  (high-level semantics)
+#
+#   ResNet50 examples:
+#     layer1.2.relu      → after 1st residual stage
+#     layer2.3.relu      → after 2nd residual stage
+#     layer3.5.relu      → after 3rd residual stage
+#     layer4.2.relu      → after 4th residual stage
+#
+act_layers:
+  - "model.features.9"
+  - "model.features.18"
+  - "model.features.27"
+
+# act_weights : Per-layer multiplier α_ℓ (must have same length as act_layers)
+#   Upweight deeper layers to emphasize semantic over low-level matching
+act_weights:
+  - 0.5    # layer 1 — low-level
+  - 1.0    # layer 2 — mid-level
+  - 1.0    # layer 3 — high-level
+
+
+# ── Logging ─────────────────────────────────────────────────────────
+# Print loss values every N steps during optimization
+log_every: 100

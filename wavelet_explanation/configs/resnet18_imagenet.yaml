@@ -1,0 +1,28 @@
+backbone: resnet18
+pretrained: true
+dataset: imagenet
+image_size: 224
+batch_size: 8
+lr: 1.0e-4
+epochs: 50
+
+# Loss weights
+lambda_act: 1.0
+lambda_CE: 4.0
+lambda_KL: 0.4
+lambda_rob: 6.0
+lambda_bin: 0.3
+
+# Per-subband area loss weights
+# HH penalised most (texture least important for most classes)
+lambda_area_LL: 5.0
+lambda_area_LH: 10.0
+lambda_area_HL: 10.0
+lambda_area_HH: 20.0
+
+# Circuit discovery
+top_k_channels: 10
+
+# Wavelet
+wavelet: haar
+levels: 1

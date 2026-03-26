@@ -1,0 +1,36 @@
+# ResNet-18 on Tiny-ImageNet-200
+# Tiny-ImageNet: 200 classes, 64x64 images, ~236 MB download
+# Download with: python prepare_tiny_imagenet.py --data_path /path/to/save
+#
+# ResNet-18 pretrained on full ImageNet-1k still works here —
+# we freeze it and only train the U-Net explanation mask generator.
+# ResNet-18 on Tiny-ImageNet-200
+# Tiny-ImageNet: 200 classes, 64x64 images, ~236 MB download
+# Download with: python prepare_tiny_imagenet.py --data_path /path/to/save
+#
+# Uses ImageNet-1k pretrained ResNet-18 frozen as the explainee.
+# L_CE and L_rob use the model's own top-1 prediction (not ImageFolder labels)
+# so there is no label-space mismatch between the 0-199 ImageFolder indices
+# and the 0-999 ImageNet-1k class indices.
+backbone: resnet18
+pretrained: true
+dataset: imagefolder     # uses ImageFolder loader (train/ and val/ subdirs)
+image_size: 64           # Tiny-ImageNet native resolution
+batch_size: 32
+lr: 1.0e-4
+epochs: 50
+
+lambda_act: 1.0
+lambda_CE:  3.0
+lambda_KL:  0.5
+lambda_rob: 5.0
+lambda_bin: 0.3
+
+# Per-subband area weights (same rationale as ImageNet config)
+lambda_area_LL: 0.5
+lambda_area_LH: 10.0
+lambda_area_HL: 10.0
+lambda_area_HH: 20.0
+
+wavelet: haar
+levels: 1

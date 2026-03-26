@@ -1,0 +1,44 @@
+# ResNet-18 (ImageNet pretrained) — Spectral Radial Mask mode
+# Trains on a single image to verify the spectral explanation works.
+#
+# Run:
+#   python train_spectral.py \
+#       --config configs/resnet18_imagenet_spectral.yaml \
+#       --data_path /path/to/imagenet \
+#       --output_dir outputs/spectral_avocado/
+#
+# Or with a single image file:
+#   python train_spectral.py \
+#       --config configs/resnet18_imagenet_spectral.yaml \
+#       --data_path /dev/null \
+#       --output_dir outputs/spectral_avocado/
+#   (set single_image_path in this config)
+
+backbone: resnet18
+pretrained: true
+dataset: imagefolder
+image_size: 224
+batch_size: 8
+lr: 1.0e-4
+epochs: 500
+viz_every: 20
+
+# Spectral mode switches
+spectral_mask_mode: true        # activates SpectralExplanationTrainer
+spectral_mask_arch: radial      # only 'radial' is currently implemented
+spectral_radial_bins: 64        # number of 1-D frequency bins
+
+# Loss weights
+lambda_act: 1.0
+lambda_CE:  8.0
+lambda_KL:  0.5
+lambda_rob: 5.0
+lambda_bin: 0.5
+
+# Spectral-specific losses
+lambda_spectral_area_lf: 2.0   # penalty weight at DC (lowest freq)
+lambda_spectral_area_hf: 10.0  # penalty weight at Nyquist (highest freq)
+lambda_spectral_tv: 1.0        # smoothness / connectedness of freq mask
+
+wavelet: haar   # unused by spectral trainer; kept for config schema compat
+levels: 1

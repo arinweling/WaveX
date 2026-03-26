@@ -1,0 +1,46 @@
+# Wavelet explanation config using TIAToolbox's PCam-pretrained ResNet-18.
+# Dataset is expected in ImageFolder format:
+#   <data_path>/train/<class_name>/*.png
+#   <data_path>/val/<class_name>/*.png   (optional for explanation training)
+
+backbone: resnet18_tiatoolbox_pcam
+dataset: imagefolder
+image_size: 96
+
+# Optional override if you want a different HF checkpoint id
+classifier_hf_repo: 1aurent/resnet18.tiatoolbox-pcam
+
+single_image_mode: false
+single_image_path: null
+fixed_class_label: null
+
+pixel_mask_mode: false
+
+batch_size: 16
+lr: 1.0e-4
+epochs: 200
+viz_every: 10
+
+lambda_act: 100.0
+lambda_CE: 1000.0
+lambda_KL: 0.0
+lambda_rob: 0.0
+lambda_bin: 0.0
+lambda_tv: 200.0
+lambda_tv_e: 50.0
+lambda_area_e: 500.0
+lambda_area_pixel: 0.0
+
+# Explanation cleanup
+min_explanation_neighbors: 2
+explanation_active_threshold: 0.05
+
+# Use all subbands by default
+disabled_subbands: []
+lambda_area_LL: 5.0
+lambda_area_LH: 10.0
+lambda_area_HL: 10.0
+lambda_area_HH: 20.0
+
+wavelet: haar
+levels: 1

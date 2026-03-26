@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Environments
+.venv/
+venv/
+.env
+
+# Data / outputs
+wavelet_explanation/eval_*/
+wavelet_explanation/outputs_*/
+
+# Logs
+*.log
+logs/
+
+# Test caches
+.pytest_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

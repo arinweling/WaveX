@@ -1,0 +1,26 @@
+backbone: custom_cnn
+pretrained: false
+dataset: mnist
+image_size: 28
+batch_size: 32
+lr: 1.0e-3
+epochs: 100
+
+# Path to pretrained MNIST classifier weights
+# Run: python -c "from models.custom_cnn import train_mnist_classifier; train_mnist_classifier()"
+classifier_checkpoint: mnist_classifier.pth
+
+lambda_act: 0.6
+lambda_CE: 4.0
+lambda_KL: 0.54
+lambda_rob: 10.0
+lambda_bin: 1.2
+
+# Stronger penalties — MNIST images are small so every coefficient matters
+lambda_area_LL: 20.0
+lambda_area_LH: 40.0
+lambda_area_HL: 40.0
+lambda_area_HH: 100.0
+
+wavelet: haar
+levels: 1

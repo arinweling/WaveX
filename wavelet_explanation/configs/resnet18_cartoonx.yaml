@@ -1,0 +1,42 @@
+# Single-image CartoonX Configuration
+# 
+# Notice the learning rate is 0.1 instead of 1e-4. Direct tensor optimization
+# typically requires a larger learning rate than a deep neural network, as you 
+# are pushing sigmoids across a 0.5 boundary directly rather than tuning abstract 
+# conv layers.
+
+backbone: resnet18
+pretrained: true
+dataset: imagenet
+image_size: 224
+
+# The image we are running CartoonX on
+single_image_path: /home/arin/Documents/btp2/wavelet_explanation/data/cobra.jpg
+fixed_class_label: 248  # Husky class label
+
+# Optimization Parameters
+lr: 0.1                 # Much higher than U-Net!
+epochs: 500
+
+# Your Custom Loss Weights
+lambda_act: 100.0
+lambda_CE:  1000.0       
+lambda_KL:  0.0
+lambda_rob: 0.0          # Set to 5.0 to test frequency/wavelet noise robustness
+lambda_bin: 0.5          
+lambda_tv:  00.0        
+lambda_tv_e: 500.0       
+lambda_area_e: 75.0      
+
+min_explanation_neighbors: 2
+explanation_active_threshold: 0.1
+
+# Per-subband area weights
+disabled_subbands: []
+lambda_area_LL: 10.0
+lambda_area_LH: 15.0
+lambda_area_HL: 15.0
+lambda_area_HH: 20.0
+
+wavelet: haar
+levels: 1

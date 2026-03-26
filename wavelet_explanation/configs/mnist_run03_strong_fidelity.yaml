@@ -1,0 +1,27 @@
+# Run 03 — Strong fidelity (high lambda_CE + lambda_rob, lower area)
+# Prioritises label preservation above sparsity.
+# Use when run01/02 show label_preservation_rate < 0.80.
+# Expected: denser masks but near-perfect label preservation.
+backbone: custom_cnn
+pretrained: false
+dataset: mnist
+image_size: 28
+batch_size: 32
+lr: 1.0e-3
+epochs: 50
+classifier_checkpoint: mnist_classifier.pth
+
+lambda_act: 0.6
+lambda_CE:  8.0    # 2× baseline — enforce class preservation harder
+lambda_KL:  1.0    # also raised — match full softmax distribution
+lambda_rob: 15.0   # stronger robustness to background noise
+lambda_bin: 1.2
+
+# Relaxed area penalty — allow masks to be denser to preserve accuracy
+lambda_area_LL: 10.0
+lambda_area_LH: 20.0
+lambda_area_HL: 20.0
+lambda_area_HH: 50.0
+
+wavelet: haar
+levels: 1

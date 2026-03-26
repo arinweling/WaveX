@@ -1,0 +1,47 @@
+# ResNet-18 fine-tuned on STL-10 (10 classes, 96×96 resolution)
+# STL-10 classes: airplane, bird, car, cat, deer, dog, horse, monkey, ship, truck
+#
+# Classifier: DuckyDuck123/resnet18-stl10 (HuggingFace)
+#   - ResNet-18, fc replaced with Linear(512, 10)
+#   - 90.4% val accuracy, downloaded automatically via huggingface_hub
+#   - ImageNet mean/std normalisation (same as this config's transform)
+#
+# Subband resolution at level-1 Haar DWT: 48×48 (rich spatial detail)
+#
+# L_CE and L_rob use the model's own top-1 prediction (Option B) so the
+# 10-class output indices (0-9) are used directly — no label mismatch.
+backbone: resnet18_stl10
+dataset: stl10
+image_size: 96           # STL-10 native resolution — no resize needed
+filter_class: 5          # 5 = dog (airplane=0,bird=1,car=2,cat=3,deer=4,dog=5,horse=6,monkey=7,ship=8,truck=9)
+single_image_mode: true  # overfit UNet on one fixed image
+single_image_index: 3    # index into the filtered dog subset
+pixel_mask_mode: true   # true → PixelMaskNet (no wavelets); false → UNet + DWT
+batch_size: 32
+lr: 1.0e-4
+epochs: 500
+viz_every: 5             # save explanation & attribution images every N epochs
+
+lambda_act: 1.0
+lambda_CE:  1000.0   # raised from 3.0 — label preservation was only 44.7%
+lambda_KL:  0.0   # raised from 0.5 — tighter distribution matching to 1.0
+lambda_rob: 0.0  # raised from 5.0 — robustness pressure to 10.0
+lambda_bin: 5.0
+lambda_tv:  500.0  # total variation on masks — encourages smooth, contiguous mask regions
+lambda_tv_e: 500.0  # total variation on explanation image — suppresses pixel-level noise
+lambda_area_e: 0.0  # pixel-space area loss on IDWT explanation (||e||_1 / ||x||_1)
+lambda_area_pixel: 10.0  # L1 area penalty on pixel-space mask (used in pixel_mask_mode)
+min_explanation_neighbors: 2  # remove pixels with fewer than this many active neighbours (0 = off)
+explanation_active_threshold: 0.05  # pixels below 5% of per-image peak are treated as inactive grey
+# LH and HL subbands (directional edges) are disabled — masks are fixed to zero.
+# Only LL (coarse structure) and HH (fine texture) are active.
+disabled_subbands: []
+
+# Per-subband area weights (LH/HL values are irrelevant since those masks are zeroed)
+lambda_area_LL: 0.0
+lambda_area_LH: 0.0
+lambda_area_HL: 0.0
+lambda_area_HH: 0.0
+
+wavelet: haar
+levels: 1

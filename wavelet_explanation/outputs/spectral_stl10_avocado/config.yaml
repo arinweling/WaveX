@@ -1,0 +1,34 @@
+# Spectral Explanation for a single image using STL-10 ResNet-18 classifier
+
+backbone: resnet18_stl10
+dataset: stl10
+image_size: 96  # STL-10 native resolution
+
+# Override dataset loading to just use the avocado image
+single_image_mode: true
+single_image_path: "data/husky.jpg"
+
+# Leave fixed_class_label empty to explain whatever the classifier's top-1 prediction is
+# fixed_class_label: 5  
+
+batch_size: 1
+lr: 1.0e-4
+epochs: 500
+viz_every: 20
+
+# Spectral mode switches
+spectral_mask_mode: true
+spectral_mask_arch: unet
+spectral_radial_bins: 64
+
+# Loss weights (based on STL-10 config)
+lambda_act: 1.0
+lambda_CE:  1000.0  
+lambda_KL:  0.0     
+lambda_rob: 0.0     
+lambda_bin: 5.0
+
+# Spectral-specific losses
+lambda_spectral_area_lf: 2.0   # penalty weight at DC (lowest freq)
+lambda_spectral_area_hf: 10.0  # penalty weight at Nyquist (highest freq)
+lambda_spectral_tv: 500.0      # smoothness in freq space
