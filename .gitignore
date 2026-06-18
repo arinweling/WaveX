@@ -23,7 +23,6 @@ logs/
 Thumbs.db
 .vscode/
 .idea/
-docs
 imagenet_mini
 *:Zone.Identifier
 all_class
