@@ -17,3 +17,5 @@ cd notebooks
 ```
 Run any python notebook with the appropriate python environment active.
 
+# Docs
+BTP2 presentation can be found in the docs folder.
